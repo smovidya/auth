@@ -9,36 +9,39 @@
 	"compatibility_date": "2025-06-19",
 	"observability": {
 		"enabled": true
-	}
-	/**
-	 * Smart Placement
-	 * Docs: https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
-	 */
-	// "placement": { "mode": "smart" },
-
-	/**
-	 * Bindings
-	 * Bindings allow your Worker to interact with resources on the Cloudflare Developer Platform, including
-	 * databases, object storage, AI inference, real-time communication and more.
-	 * https://developers.cloudflare.com/workers/runtime-apis/bindings/
-	 */
-
-	/**
-	 * Environment Variables
-	 * https://developers.cloudflare.com/workers/wrangler/configuration/#environment-variables
-	 */
-	// "vars": { "MY_VARIABLE": "production_value" },
-	/**
-	 * Note: Use secrets to store sensitive data.
-	 * https://developers.cloudflare.com/workers/configuration/secrets/
-	 */
-
+	},
+	"d1_databases": [
+		{
+			"binding": "AUTH_DB",
+			"database_id": "9ebfe5f0-675d-424f-8c23-cd9960f09c21",
+			"database_name": "auth-db",
+			"migrations_dir": "drizzle"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "KV",
+			"id": "eafd1264a27a4d9fa26aded669fbb76d"
+		}
+	],
+	"vars": {
+		"BETTER_AUTH_URL": "http://localhost:8787",
+	},
+	"env": {
+		"production": {
+			"vars": {
+				"BETTER_AUTH_URL": "https://auth.smovidya-chula.workers.dev"
+			}
+		}
+	},
+	"compatibility_flags": [
+		"nodejs_compat"
+	]
 	/**
 	 * Static Assets
 	 * https://developers.cloudflare.com/workers/static-assets/binding/
 	 */
 	// "assets": { "directory": "./public/", "binding": "ASSETS" },
-
 	/**
 	 * Service Bindings (communicate between multiple Workers)
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings
