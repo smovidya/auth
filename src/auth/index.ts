@@ -1,10 +1,12 @@
 import type { D1Database, IncomingRequestCfProperties } from "@cloudflare/workers-types";
-import { betterAuth } from "better-auth";
+import { APIError, betterAuth } from "better-auth";
 import { withCloudflare } from "better-auth-cloudflare";
-import { anonymous } from "better-auth/plugins";
+import { admin, anonymous, bearer, createAuthMiddleware, customSession, openAPI } from "better-auth/plugins";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { drizzle } from "drizzle-orm/d1";
+import { oidcProvider, jwt } from "better-auth/plugins";
 import { schema } from "../db";
+import { sso } from 'better-auth/plugins/sso';
 
 // Single auth configuration that handles both CLI and runtime scenarios
 function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
@@ -29,10 +31,60 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
         kv: env?.KV,
       },
       {
-        plugins: [anonymous()],
+        user: {
+          additionalFields: {
+            ssoUid: {
+              type: "string",
+              defaultValue: "",
+              input: false,
+              required: false,
+            },
+            ssoRoles: {
+              type: "string",
+              defaultValue: "[]",
+              required: false,
+              input: false,
+            },
+            ssoOuid: {
+              type: "string",
+              defaultValue: "",
+              required: false,
+              input: false,
+              unique: true,
+            },
+            ssoGecos: {
+              type: "string",
+              defaultValue: "",
+              required: false,
+              input: false,
+            }
+          }
+        },
+        plugins: [
+          anonymous(),
+          oidcProvider({
+            loginPage: "/sign-in",
+            consentPage: "/consent",
+            metadata: {
+              issuer: "https://auth.smovidya-chula.workers.dev",
+            },
+            scopes: ["openid", "student_profile"],
+          }),
+          bearer(),
+          admin(),
+          sso(),
+          openAPI()
+        ],
         rateLimit: {
           // Enable rate limiting
           enabled: true,
+        },
+        advanced: {
+          cookiePrefix: "smovidya",
+          crossSubDomainCookies: {
+            enabled: true,
+            domain: ".smovidya-chula.workers.dev",
+          }
         },
       }
     ),
