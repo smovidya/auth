@@ -10,6 +10,10 @@ type Variables = {
 
 const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
+app.get("/favicon.ico", (c) => {
+    return env.ASSETS.fetch("favicon.ico")
+})
+
 // CORS configuration for auth routes
 app.use(
     "/api/auth/**",
