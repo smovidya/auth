@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>
+    เข้าสู่ระบบ SMO Vidya
+  </title>
+</head>
+
+<body>
+  <article>
+    <h1>เข้าสู่ระบบ SMO Vidya</h1>
+    <p>กรุณาเข้าสู่ระบบด้วยบัญชี @student.chula.ac.th เพื่อดำเนินการต่อ</p>
+  </article>
+
+  <script>
+    async function checkStatus() {
+      try {
+        const response = await fetch('/api/auth/get-session', {
+          credentials: 'include'
+        });
+
+        if (!response.ok) {
+          showNotLoggedIn();
+          return;
+        }
+
+        const text = await response.text();
+
+        if (!text || text.trim() === '') {
+          showNotLoggedIn();
+          return;
+        }
+
+        const result = JSON.parse(text);
+
+        if (result?.session) {
+          currentUser = result.user;
+          await showLoggedIn();
+        } else {
+          showNotLoggedIn();
+        }
+      } catch (error) {
+        console.error('Error checking status:', error);
+        showNotLoggedIn();
+      }
+    }
+
+    function loginWithGoogle() { }
+  </script>
+</body>
+
+</html>

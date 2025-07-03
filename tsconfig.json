@@ -18,13 +18,25 @@
 		"moduleResolution": "Bundler",
 		"module": "es2022",
 		"noEmit": true,
-		"lib": ["es2022"],
+		"lib": [
+			"es2022"
+		],
 		"types": [
 			"./worker-configuration.d.ts",
 			"@types/node",
-			"@types/service-worker-mock"
-		]
+			"@types/service-worker-mock",
+			"@types/bun"
+		],
+		"jsx": "react-jsx",
+		"jsxImportSource": "hono/jsx"
 	},
-	"exclude": ["node_modules", "dist", "tests"],
-	"include": ["src", "worker-configuration.d.ts"]
+	"exclude": [
+		"node_modules",
+		"dist",
+		"tests"
+	],
+	"include": [
+		"src",
+		"worker-configuration.d.ts"
+	]
 }

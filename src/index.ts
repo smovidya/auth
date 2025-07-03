@@ -2,42 +2,43 @@ import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { createAuth } from "./auth";
 import { env } from 'cloudflare:workers';
+import { pageRouter } from "./pages/index"
 
 type Variables = {
-	auth: ReturnType<typeof createAuth>;
+    auth: ReturnType<typeof createAuth>;
 };
 
 const app = new Hono<{ Bindings: Env; Variables: Variables }>();
 
 // CORS configuration for auth routes
 app.use(
-	"/api/auth/**",
-	cors({
-		origin: env.BETTER_AUTH_URL, // In production, replace with your actual domain
-		allowHeaders: ["Content-Type", "Authorization"],
-		allowMethods: ["POST", "GET", "OPTIONS"],
-		exposeHeaders: ["Content-Length"],
-		maxAge: 600,
-		credentials: true,
-	})
+    "/api/auth/**",
+    cors({
+        origin: env.BETTER_AUTH_URL, // In production, replace with your actual domain
+        allowHeaders: ["Content-Type", "Authorization"],
+        allowMethods: ["POST", "GET", "OPTIONS"],
+        exposeHeaders: ["Content-Length"],
+        maxAge: 600,
+        credentials: true,
+    })
 );
 
 // Middleware to initialize auth instance for each request
 app.use("*", async (c, next) => {
-	const auth = createAuth(c.env, (c.req.raw as any).cf || {});
-	c.set("auth", auth);
-	await next();
+    const auth = createAuth(c.env, (c.req.raw as any).cf || {});
+    c.set("auth", auth);
+    await next();
 });
 
 // Handle all auth routes
 app.all("/api/auth/*", async c => {
-	const auth = c.get("auth");
-	return auth.handler(c.req.raw);
+    const auth = c.get("auth");
+    return auth.handler(c.req.raw);
 });
 
 // Home page with anonymous login
 app.get("/", async c => {
-	const html = `
+    const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -273,20 +274,20 @@ app.get("/", async c => {
 </body>
 </html>
   `;
-	return c.html(html);
+    return c.html(html);
 });
 
 // Protected route that shows different content based on auth status
 app.get("/protected", async c => {
-	const auth = c.get("auth");
+    const auth = c.get("auth");
 
-	try {
-		const session = await auth.api.getSession({
-			headers: c.req.raw.headers,
-		});
+    try {
+        const session = await auth.api.getSession({
+            headers: c.req.raw.headers,
+        });
 
-		if (session?.session && session?.user) {
-			return c.html(`
+        if (session?.session && session?.user) {
+            return c.html(`
                 <h2>🔒 Protected Content - You're In!</h2>
                 <p>Welcome to the protected area!</p>
                 <p><strong>User ID:</strong> ${session.user.id}</p>
@@ -294,31 +295,33 @@ app.get("/protected", async c => {
                 <p><strong>Created At:</strong> ${new Date(session.user.createdAt).toLocaleString()}</p>
                 <p>This content is only visible to authenticated users (including anonymous ones)!</p>
             `);
-		} else {
-			return c.html(
-				`
+        } else {
+            return c.html(
+                `
                 <h2>❌ Access Denied</h2>
                 <p>You need to be logged in to see this content.</p>
                 <p>Go back and login anonymously first!</p>
             `,
-				401
-			);
-		}
-	} catch (error) {
-		return c.html(
-			`
+                401
+            );
+        }
+    } catch (error) {
+        return c.html(
+            `
             <h2>❌ Error</h2>
             <p>Error checking authentication: ${(error as Error).message}</p>
         `,
-			500
-		);
-	}
+            500
+        );
+    }
 });
 
 // Simple health check
 app.get("/health", c => {
-	return c.json({ status: "ok", timestamp: new Date().toISOString() });
+    return c.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-export default app;
+app.route("", pageRouter);
 
+export default app;
+export type AuthApp = typeof app

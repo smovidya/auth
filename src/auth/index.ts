@@ -31,6 +31,23 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
         kv: env?.KV,
       },
       {
+        appName: "Science Chula Central Authentication",
+        logger: {
+          level: "info",
+          log(level, message, ...args) {
+            if (level === "error") {
+              console.error(message, ...args);
+            } else {
+              console.log(message, ...args);
+            }
+          },
+        },
+        socialProviders: {
+          google: {
+            clientId: env?.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID,
+            clientSecret: env?.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET,
+          }
+        },
         user: {
           additionalFields: {
             ssoUid: {
