@@ -2,6 +2,7 @@ import { Hono } from 'hono'
 import { jsxRenderer, useRequestContext } from 'hono/jsx-renderer';
 import privacyPolicyHtml from './privacy-policy.html';
 import { LoginPage } from './login';
+import { renderToString } from 'hono/jsx/dom/server'
 
 const pageRouter = new Hono<{ Bindings: Env; }>()
 
@@ -13,6 +14,5 @@ pageRouter.get("/login", (c) => {
 pageRouter.get("/privacy-policy", (c) => {
   return c.html(privacyPolicyHtml)
 })
-
 
 export { pageRouter }
