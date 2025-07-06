@@ -21,12 +21,12 @@
 		}
 	],
 	"vars": {
-		"BETTER_AUTH_URL": "http://localhost:5173",
+		"BETTER_AUTH_URL": "https://auth.smovidya-chula.workers.dev",
 	},
 	"env": {
-		"production": {
+		"dev": {
 			"vars": {
-				"BETTER_AUTH_URL": "https://auth.smovidya-chula.workers.dev"
+				"BETTER_AUTH_URL": "http://localhost:5173"
 			}
 		}
 	},
