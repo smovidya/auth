@@ -1,7 +1,7 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "auth",
-	"main": "src/index.ts",
+	"main": "worker/index.ts",
 	"compatibility_date": "2025-06-19",
 	"observability": {
 		"enabled": true
@@ -21,7 +21,7 @@
 		}
 	],
 	"vars": {
-		"BETTER_AUTH_URL": "http://localhost:8787",
+		"BETTER_AUTH_URL": "http://localhost:5173",
 	},
 	"env": {
 		"production": {
@@ -34,8 +34,7 @@
 		"nodejs_compat"
 	],
 	"assets": {
-		"directory": "./static/",
-		"binding": "ASSETS"
+		"not_found_handling": "single-page-application"
 	},
 	/**
 	 * Service Bindings (communicate between multiple Workers)

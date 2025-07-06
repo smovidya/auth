@@ -1,4 +1,4 @@
-import { schema } from "./schema";
+// import { schema } from "./schema";
 
 // Re-export the drizzle-orm types and utilities from here for convenience
 export * from "drizzle-orm";

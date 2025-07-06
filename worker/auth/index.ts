@@ -1,10 +1,10 @@
 import type { D1Database, IncomingRequestCfProperties } from "@cloudflare/workers-types";
-import { APIError, betterAuth } from "better-auth";
+import { betterAuth } from "better-auth";
 import { withCloudflare } from "better-auth-cloudflare";
-import { admin, anonymous, bearer, createAuthMiddleware, customSession, openAPI } from "better-auth/plugins";
+import { admin, anonymous, bearer, openAPI } from "better-auth/plugins";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { drizzle } from "drizzle-orm/d1";
-import { oidcProvider, jwt } from "better-auth/plugins";
+import { oidcProvider } from "better-auth/plugins";
 import { schema } from "../db";
 import { sso } from 'better-auth/plugins/sso';
 
@@ -78,7 +78,9 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
           }
         },
         plugins: [
-          anonymous(),
+          anonymous({
+            emailDomainName: "smovidya.local",
+          }),
           oidcProvider({
             loginPage: "/sign-in",
             consentPage: "/consent",
@@ -98,10 +100,6 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
         },
         advanced: {
           cookiePrefix: "smovidya",
-          crossSubDomainCookies: {
-            enabled: true,
-            domain: ".smovidya-chula.workers.dev",
-          }
         },
       }
     ),
