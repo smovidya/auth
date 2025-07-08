@@ -1,7 +1,7 @@
 import type { D1Database, IncomingRequestCfProperties } from "@cloudflare/workers-types";
 import { betterAuth } from "better-auth";
 import { withCloudflare } from "better-auth-cloudflare";
-import { admin, anonymous, bearer, openAPI } from "better-auth/plugins";
+import { admin, anonymous, bearer, jwt, openAPI } from "better-auth/plugins";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { drizzle } from "drizzle-orm/d1";
 import { oidcProvider } from "better-auth/plugins";
@@ -77,6 +77,7 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
             }
           }
         },
+        // Also add plugins client-side in app/lib/auth-client.ts
         plugins: [
           anonymous({
             emailDomainName: "smovidya.local",
@@ -92,7 +93,8 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
           bearer(),
           admin(),
           sso(),
-          openAPI()
+          openAPI(),
+          jwt(),
         ],
         rateLimit: {
           // Enable rate limiting
@@ -102,8 +104,9 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
           cookiePrefix: "smovidya",
         },
         trustedOrigins(request) {
+          const url = new URL(request.url);
           // Allow requests from the same origin as the request
-          return [request.headers.get("origin") || env?.BETTER_AUTH_URL];
+          return [url.origin || env?.BETTER_AUTH_URL];
         },
       }
     ),

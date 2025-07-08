@@ -54,6 +54,9 @@ export default {
         if (url.pathname.startsWith("/api/auth")) {
             return apiRouter.fetch(request, env, ctx);
         }
+        if (url.pathname.startsWith("/.well-known")) {
+            return apiRouter.fetch(request, env, ctx);
+        }
         return requestHandler(request, {
             cloudflare: { env, ctx },
         });
