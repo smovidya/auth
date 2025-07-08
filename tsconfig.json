@@ -17,6 +17,14 @@
 		"types": [
 			"./worker-configuration.d.ts",
 			"node",
-		]
+		],
+		"paths": {
+			"~/*": [
+				"./app/*"
+			],
+			"~/lib/*": [
+				"./app/lib/*"
+			],
+		}
 	}
 }
