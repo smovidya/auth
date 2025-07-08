@@ -101,6 +101,10 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
         advanced: {
           cookiePrefix: "smovidya",
         },
+        trustedOrigins(request) {
+          // Allow requests from the same origin as the request
+          return [request.headers.get("origin") || env?.BETTER_AUTH_URL];
+        },
       }
     ),
     // Only add database adapter for CLI schema generation

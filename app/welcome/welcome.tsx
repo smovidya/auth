@@ -1,7 +1,7 @@
-import { authClient } from './lib/auth-client'
-import './App.css'
+import "./welcome.css"
+import { authClient } from '~/lib/auth-client'
 
-function App() {
+export function Welcome({ message }: { message: string }) {
   const {
     data: session,
     isPending, //loading state
@@ -38,5 +38,3 @@ function App() {
     </>
   )
 }
-
-export default App

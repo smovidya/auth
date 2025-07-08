@@ -1,7 +1,7 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "auth",
-	"main": "worker/index.ts",
+	"main": "workers/index.ts",
 	"compatibility_date": "2025-06-19",
 	"observability": {
 		"enabled": true
@@ -20,22 +20,9 @@
 			"id": "eafd1264a27a4d9fa26aded669fbb76d"
 		}
 	],
-	"vars": {
-		"BETTER_AUTH_URL": "https://auth.smovidya-chula.workers.dev",
-	},
-	"env": {
-		"dev": {
-			"vars": {
-				"BETTER_AUTH_URL": "http://localhost:5173"
-			}
-		}
-	},
 	"compatibility_flags": [
 		"nodejs_compat"
-	],
-	"assets": {
-		"not_found_handling": "single-page-application"
-	},
+	]
 	/**
 	 * Service Bindings (communicate between multiple Workers)
 	 * https://developers.cloudflare.com/workers/wrangler/configuration/#service-bindings

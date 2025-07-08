@@ -168,5 +168,11 @@ dist
 
 # wrangler project
 
-.dev.vars
+# Cloudflare
+.mf
+.dev.vars*
 .wrangler/
+
+# React Router
+/.react-router/
+/build/
