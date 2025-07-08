@@ -42,10 +42,6 @@
 }
 
 :root {
-  /* --color-yellow01: oklch(86.585% 0.15389 92.104);
-  --color-yellow02: oklab(77.339% -0.00111 0.15077);
-  --color-yellow03: oklab(70.017% 0.00417 0.14299); */
-
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
@@ -53,7 +49,7 @@
   --card-foreground: oklch(0.141 0.005 285.823);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.141 0.005 285.823);
-  --primary: oklab(77.339% -0.00111 0.15077);
+  --primary: oklab(86.25% -0.00121 0.16455);
   --primary-foreground: oklch(23.929% 0.00003 271.152);
   --secondary: oklch(0.967 0.001 286.375);
   --secondary-foreground: oklch(0.21 0.006 285.885);
@@ -120,6 +116,6 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground min-h-screen;
   }
 }

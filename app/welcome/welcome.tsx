@@ -1,40 +1,47 @@
-import "./welcome.css"
+import { Button } from '~/components/ui/button'
 import { authClient } from '~/lib/auth-client'
 
-export function Welcome({ message }: { message: string }) {
-  const {
-    data: session,
-    isPending, //loading state
-    error, //error object
-  } = authClient.useSession()
-
+export function Welcome() {
+  const session = authClient.useSession()
   return (
-    <>
-      {isPending && <p>Loading...</p>}
-      {error && <p>Error: {error.message}</p>}
-      {session && (
+    <div className="h-screen container m-auto p-10 flex items-center justify-center">
+      <main>
+        <h1 className="text-2xl">ระบบจัดการบริการยืนยันตัวตน</h1>
+        <span>
+          สโมสรนิสิตคณะวิทยาศาสตร์ จุฬาลงกรณ์มหาวิทยาลัย
+        </span>
         <div>
-          <p>Welcome, {session.user.name}!</p>
-          <p>Email: {session.user.email}</p>
-          <button onClick={() => authClient.signOut()}>Sign Out</button>
+          <p className="text-muted-foreground text-sm">
+            ระบบนี้ใช้สำหรับยืนยันตัวตนของนิสิตคณะวิทยาศาสตร์
+            จุฬาลงกรณ์มหาวิทยาลัย เพื่อเข้าถึงบริการต่างๆ ของสโมสรนิสิต
+          </p>
+          {session.data ? (
+            <>
+              <p className="text-muted-foreground text-sm">
+                ยินดีต้อนรับ, {session.data.user.name}!
+              </p>
+              <Button
+                variant="secondary"
+                className="w-full mt-4"
+                onClick={() => authClient.signOut()}
+              >
+                ออกจากระบบ
+              </Button>
+            </>
+          ) : (
+            <>
+              <p className="text-muted-foreground text-sm">
+                กรุณาเข้าสู่ระบบด้วยบัญชีนิสิตของคุณ
+              </p>
+              <a href="/login">
+                <Button variant="secondary" className="w-full mt-4">
+                  เข้าสู่ระบบ
+                </Button>
+              </a>
+            </>
+          )}
         </div>
-      )}
-      {!session && !isPending && (
-        <>
-          <p>You are not signed in.</p>
-          <p>To continue, sign in with your Chula SSO Account</p>
-          <div style={{ display: 'flex', gap: "0.5rem", flexDirection: 'column' }}>
-            <button onClick={async () => await authClient.signIn.social({
-              provider: "google",
-            })}>
-              Sing in with Chula SSO
-            </button>
-            <button onClick={async () => await authClient.signIn.anonymous()}>
-              Anonymous signin (testing only)
-            </button>
-          </div>
-        </>
-      )}
-    </>
+      </main>
+    </div>
   )
 }
