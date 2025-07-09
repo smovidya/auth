@@ -1,12 +1,12 @@
 import type { D1Database, IncomingRequestCfProperties } from "@cloudflare/workers-types";
 import { betterAuth } from "better-auth";
 import { withCloudflare } from "better-auth-cloudflare";
-import { admin, anonymous, bearer, jwt, openAPI } from "better-auth/plugins";
+import { admin, bearer, jwt, oAuthProxy, openAPI } from "better-auth/plugins";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { drizzle } from "drizzle-orm/d1";
 import { oidcProvider } from "better-auth/plugins";
 import { schema } from "../db";
-import { sso } from 'better-auth/plugins/sso';
+import { ac, roles } from './permission';
 
 // Single auth configuration that handles both CLI and runtime scenarios
 function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
@@ -46,55 +46,87 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
           google: {
             clientId: env?.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID,
             clientSecret: env?.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET,
+            // Set this for oAuthProxy to work
+            redirectURI: "https://auth.smovidya-chula.workers.dev/api/auth/callback/google",
           }
         },
         user: {
           additionalFields: {
-            ssoUid: {
+            // Use ouid because some users might be university staff
+            // might be different from university's convention, but it's
+            // for our use only.
+            // Not to confuse with the OIDC `sub` field or
+            // https://en.wikipedia.org/wiki/Organizationally_unique_identifier
+            ouid: {
               type: "string",
-              defaultValue: "",
               input: false,
-              required: false,
-            },
-            ssoRoles: {
-              type: "string",
-              defaultValue: "[]",
-              required: false,
-              input: false,
-            },
-            ssoOuid: {
-              type: "string",
-              defaultValue: "",
-              required: false,
-              input: false,
+              fieldName: "username",
+              label: "Username",
               unique: true,
             },
-            ssoGecos: {
+            name: {
               type: "string",
-              defaultValue: "",
-              required: false,
               input: false,
-            }
+              fieldName: "first_name",
+              label: "First Name",
+            },
+            thainame: {
+              type: "string",
+              input: false,
+              fieldName: "thai_name",
+              label: "Thai Name",
+            },
+            program: {
+              type: "string",
+              input: false,
+              fieldName: "program",
+              label: "Program",
+              required: false,
+            },
+            programName: {
+              type: "string",
+              input: false,
+              fieldName: "program_name",
+              label: "Program Name",
+              required: false,
+            },
+          },
+          changeEmail: {
+            enabled: false,
           }
         },
         // Also add plugins client-side in app/lib/auth-client.ts
         plugins: [
-          anonymous({
-            emailDomainName: "smovidya.local",
-          }),
+          // Disable anonymous login
+          // anonymous({
+          //   emailDomainName: "smovidya.local",
+          // }),
           oidcProvider({
-            loginPage: "/sign-in",
+            loginPage: "/login",
             consentPage: "/consent",
             metadata: {
               issuer: "https://auth.smovidya-chula.workers.dev",
             },
-            scopes: ["openid", "student_profile"],
+            generateClientSecret() {
+              // Generate a random client secret for OIDC clients
+              return "vidya-cs-" + crypto.getRandomValues(new Uint8Array(32)).join("");
+            },
+            generateClientId() {
+              // Generate a random client ID for OIDC clients
+              return "vidya-ci-" + crypto.getRandomValues(new Uint8Array(32)).join("");
+            },
           }),
           bearer(),
-          admin(),
-          sso(),
+          admin({
+            ac,
+            roles,
+            bannedUserMessage: "บัญชีของคุณถูกระงับการใช้ระบบ กรุณาติดต่อ smovidya.it.team[at]gmail.com",
+          }),
           openAPI(),
           jwt(),
+          oAuthProxy({
+            productionURL: "https://auth.smovidya-chula.workers.dev",
+          })
         ],
         rateLimit: {
           // Enable rate limiting

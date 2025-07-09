@@ -2,7 +2,7 @@ import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: text("id").primaryKey(),
-  name: text("name").notNull(),
+  name: text("name"),
   email: text("email").notNull().unique(),
   emailVerified: integer("email_verified", { mode: "boolean" })
     .$defaultFn(() => false)
@@ -14,15 +14,14 @@ export const users = sqliteTable("users", {
   updatedAt: integer("updated_at", { mode: "timestamp" })
     .$defaultFn(() => /* @__PURE__ */ new Date())
     .notNull(),
-  isAnonymous: integer("is_anonymous", { mode: "boolean" }),
   role: text("role"),
   banned: integer("banned", { mode: "boolean" }),
   banReason: text("ban_reason"),
   banExpires: integer("ban_expires", { mode: "timestamp" }),
-  ssoUid: text("sso_uid"),
-  ssoRoles: text("sso_roles").default("[]"),
-  ssoOuid: text("sso_ouid").unique(),
-  ssoGecos: text("sso_gecos"),
+  ouid: text("ouid").unique(),
+  thainame: text("thainame"),
+  program: text("program"),
+  programName: text("program_name"),
 });
 
 export const sessions = sqliteTable("sessions", {
@@ -122,17 +121,6 @@ export const oauthConsents = sqliteTable("oauth_consents", {
   createdAt: integer("created_at", { mode: "timestamp" }),
   updatedAt: integer("updated_at", { mode: "timestamp" }),
   consentGiven: integer("consent_given", { mode: "boolean" }),
-});
-
-export const ssoProviders = sqliteTable("sso_providers", {
-  id: text("id").primaryKey(),
-  issuer: text("issuer").notNull(),
-  oidcConfig: text("oidc_config"),
-  samlConfig: text("saml_config"),
-  userId: text("user_id").references(() => users.id, { onDelete: "cascade" }),
-  providerId: text("provider_id").notNull().unique(),
-  organizationId: text("organization_id"),
-  domain: text("domain").notNull(),
 });
 
 export const jwkss = sqliteTable("jwkss", {

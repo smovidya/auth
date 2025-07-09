@@ -51,10 +51,7 @@ apiRouter.on(["POST", "GET"], "/api/auth/**", (c) => {
 export default {
     async fetch(request, env, ctx) {
         const url = new URL(request.url);
-        if (url.pathname.startsWith("/api/auth")) {
-            return apiRouter.fetch(request, env, ctx);
-        }
-        if (url.pathname.startsWith("/.well-known")) {
+        if (url.pathname.startsWith("/api")) {
             return apiRouter.fetch(request, env, ctx);
         }
         return requestHandler(request, {

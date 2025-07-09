@@ -1,12 +1,13 @@
 import { createAuthClient } from "better-auth/react"
-import { anonymousClient, oidcClient, adminClient, ssoClient } from 'better-auth/client/plugins'
+import { oidcClient, adminClient, inferAdditionalFields } from 'better-auth/client/plugins'
+import type { auth } from 'workers/auth'
+import { ac, roles } from 'workers/auth/permission'
 
 export const authClient = createAuthClient({
   // Also add plugins to backend at workers/auth/index.ts
   plugins: [
-    anonymousClient(),
     oidcClient(),
-    adminClient(),
-    ssoClient(),
+    adminClient({ ac, roles }),
+    inferAdditionalFields<typeof auth>()
   ],
 })
