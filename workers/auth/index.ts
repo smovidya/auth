@@ -67,7 +67,7 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
             name: {
               type: "string",
               input: false,
-              fieldName: "first_name",
+              fieldName: "name",
               label: "First Name",
             },
             thainame: {
