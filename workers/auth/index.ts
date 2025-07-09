@@ -93,7 +93,7 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
           },
           changeEmail: {
             enabled: false,
-          }
+          },
         },
         // Also add plugins client-side in app/lib/auth-client.ts
         plugins: [
@@ -140,7 +140,26 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
           // Allow requests from the same origin as the request
           return [url.origin || env?.BETTER_AUTH_URL];
         },
-      }
+        databaseHooks: {
+          user: {
+            create: {
+              before: async (user) => {
+                if (user.email.endsWith("@student.chula.ac.th") || user.email.endsWith("@chula.ac.th")) {
+                  const ouid = user.email.split("@")[0];
+                  // Set OUID for student and staff accounts
+                  return {
+                    data: {
+                      ...user,
+                      ouid,
+                    },
+                  };
+                }
+                return { data: { ...user, ouid: user.email } };
+              },
+            }
+          }
+        }
+      },
     ),
     // Only add database adapter for CLI schema generation
     ...(env
