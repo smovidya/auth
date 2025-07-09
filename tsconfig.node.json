@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "include": [
     "vite.config.ts",
-    "worker/**/*.ts"
+    "workers/**/*.ts"
   ],
   "compilerOptions": {
     "composite": true,
