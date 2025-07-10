@@ -4,13 +4,15 @@ import { Card, CardContent } from "~/components/ui/card"
 import { authClient } from '~/lib/auth-client'
 import { useState } from 'react'
 import { Loader } from 'lucide-react'
+import { useLocation } from 'react-router'
 
-function GoogleSignInButton() {
+function GoogleSignInButton({ return_to }: { return_to?: string | null }) {
   const [loading, setLoading] = useState(false)
   function handleLogin() {
     setLoading(true)
     authClient.signIn.social({
       provider: "google",
+      callbackURL: return_to || "/dashboard",
     })
   }
 
@@ -35,6 +37,9 @@ export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  let location = useLocation()
+  let return_to = location.search ? new URLSearchParams(location.search).get('return_to') : undefined
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
@@ -56,7 +61,7 @@ export function LoginForm({
                   ระบบจัดการบริการยืนยันตัวตน
                 </p>
               </div>
-              <GoogleSignInButton />
+              <GoogleSignInButton return_to={return_to} />
             </div>
           </div>
         </CardContent>
