@@ -35,11 +35,7 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
         logger: {
           level: "info",
           log(level, message, ...args) {
-            if (level === "error") {
-              console.error(message, ...args);
-            } else {
-              console.log(message, ...args);
-            }
+            console.log(message, ...args);
           },
         },
         socialProviders: {
