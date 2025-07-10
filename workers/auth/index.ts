@@ -8,6 +8,13 @@ import { oidcProvider } from "better-auth/plugins";
 import { schema } from "../db";
 import { ac, roles } from './permission';
 
+function randomIdWithPrefix(prefix: string, length: number = 32): string {
+  // Generate a random ID with the specified prefix and length
+  const randomBytes = crypto.getRandomValues(new Uint8Array(length - prefix.length));
+  const randomId = Array.from(randomBytes, byte => byte.toString(16).padStart(2, '0')).join('');
+  return prefix + randomId;
+}
+
 // Single auth configuration that handles both CLI and runtime scenarios
 function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
   // Use actual DB for runtime, empty object for CLI
@@ -93,11 +100,11 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
             },
             generateClientSecret() {
               // Generate a random client secret for OIDC clients
-              return "vidya-cs-" + crypto.getRandomValues(new Uint8Array(32)).join("");
+              return randomIdWithPrefix("vidya-cs-", 64);
             },
             generateClientId() {
               // Generate a random client ID for OIDC clients
-              return "vidya-ci-" + crypto.getRandomValues(new Uint8Array(32)).join("");
+              return randomIdWithPrefix("vidya-ci-", 32);
             },
           }),
           bearer(),
