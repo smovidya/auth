@@ -1,5 +1,6 @@
+import { useEffect } from 'react';
+import { redirect, useNavigate } from 'react-router';
 import { Navigate, Outlet } from 'react-router';
-
 import { AppSidebar } from "~/components/app-sidebar"
 import {
   Breadcrumb,
@@ -17,9 +18,16 @@ import {
 } from "~/components/ui/sidebar"
 import { authClient } from '~/lib/auth-client';
 
-export default function DeveloperLayout() {
-  const { data: session } = authClient.useSession();
-  return session ? (
+export async function loader() {
+  const session = await authClient.getSession();
+  if (!session) {
+    return redirect('/login?return_to=/dashboard');
+  }
+  return null;
+}
+
+export default async function DashboardLayout() {
+  return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
@@ -48,7 +56,5 @@ export default function DeveloperLayout() {
         <Outlet />
       </SidebarInset>
     </SidebarProvider>
-  ) : (
-    <Navigate to="/login?return_to=/dashboard" replace={true} />
   )
 }

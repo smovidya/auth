@@ -42,8 +42,6 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
           google: {
             clientId: env?.GOOGLE_CLIENT_ID || process.env.GOOGLE_CLIENT_ID,
             clientSecret: env?.GOOGLE_CLIENT_SECRET || process.env.GOOGLE_CLIENT_SECRET,
-            // Set this for oAuthProxy to work
-            redirectURI: "https://auth.smovidya-chula.workers.dev/api/auth/callback/google",
           }
         },
         user: {
@@ -110,9 +108,6 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
           }),
           openAPI(),
           jwt(),
-          oAuthProxy({
-            productionURL: "https://auth.smovidya-chula.workers.dev",
-          })
         ],
         rateLimit: {
           // Enable rate limiting
