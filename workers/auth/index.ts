@@ -96,7 +96,7 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
             loginPage: "/login",
             consentPage: "/consent",
             metadata: {
-              issuer: "https://auth.smovidya-chula.workers.dev",
+              issuer: "https://auth.vidyachula.org",
             },
             generateClientSecret() {
               // Generate a random client secret for OIDC clients
@@ -111,7 +111,7 @@ function createAuth(env?: Env, cf?: IncomingRequestCfProperties) {
           admin({
             ac,
             roles,
-            bannedUserMessage: "บัญชีของคุณถูกระงับการใช้ระบบ กรุณาติดต่อ smovidya.it.team[at]gmail.com",
+            bannedUserMessage: "บัญชีของคุณถูกระงับการใช้ระบบ กรุณาติดต่อ appeal@vidyachula.org",
           }),
           openAPI(),
           jwt(),
